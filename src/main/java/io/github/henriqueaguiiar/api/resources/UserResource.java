@@ -1,8 +1,9 @@
 package io.github.henriqueaguiiar.api.resources;
 
 
-import io.github.henriqueaguiiar.api.domain.entity.User;
+import io.github.henriqueaguiiar.api.domain.dto.UserDTO;
 import io.github.henriqueaguiiar.api.domain.services.impl.UserServiceImpl;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,15 +17,17 @@ public class UserResource {
 
 
     private UserServiceImpl userService;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public UserResource(UserServiceImpl userService) {
+    public UserResource(UserServiceImpl userService, ModelMapper  modelMapper) {
         this.userService = userService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> findById(@PathVariable Integer id) {
-        return ResponseEntity.ok().body(userService.findById(id));
+    public ResponseEntity<UserDTO> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok().body(modelMapper.map(userService.findById(id), UserDTO.class));
     }
 
 }
