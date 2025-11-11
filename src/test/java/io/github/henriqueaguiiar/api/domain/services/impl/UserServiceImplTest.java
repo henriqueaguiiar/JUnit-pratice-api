@@ -16,13 +16,13 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -110,6 +110,19 @@ class UserServiceImplTest {
         assertEquals(EMAIL, response.getEmail());
         assertEquals(PASSWORD, response.getPassword());
 
+    }
+
+    @Test
+    @DisplayName("When create  then return DataIntegrityViolationException")
+    void whenCreateThenReturnDataIntegrityViolationException() {
+        when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
+        try{
+            userService.create(userDTO);
+        }catch (Exception e){
+            optionalUser.get().setId(2);
+            assertEquals(DataIntegrityViolationException.class, e.getClass());
+            assertEquals("Email already exists", e.getMessage());
+        }
     }
 
     @Test
