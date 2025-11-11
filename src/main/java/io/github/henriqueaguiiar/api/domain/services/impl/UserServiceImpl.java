@@ -4,6 +4,7 @@ import io.github.henriqueaguiiar.api.domain.dto.UserDTO;
 import io.github.henriqueaguiiar.api.domain.entity.User;
 import io.github.henriqueaguiiar.api.domain.repositories.UserRepository;
 import io.github.henriqueaguiiar.api.domain.services.UserService;
+import io.github.henriqueaguiiar.api.domain.services.exceptions.DataIntegratyViolationException;
 import io.github.henriqueaguiiar.api.domain.services.exceptions.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        return userRepository.save(user);
+        findByEmail(userDTO);
+        return userRepository.save(modelMapper.map(userDTO, User.class););
     }
 
+    private void findByEmail(UserDTO userDTO) {
+        Optional<User> user = userRepository.findByEmail(userDTO.getEmail());
+        if(user.isPresent()){
+            throw new DataIntegratyViolationException("Email already exists");
+        }
+    }
 
 }
