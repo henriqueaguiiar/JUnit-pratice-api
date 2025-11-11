@@ -5,6 +5,7 @@ import io.github.henriqueaguiiar.api.domain.entity.User;
 import io.github.henriqueaguiiar.api.domain.repositories.UserRepository;
 import io.github.henriqueaguiiar.api.domain.services.UserService;
 import io.github.henriqueaguiiar.api.domain.services.exceptions.ObjectNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,12 @@ public class UserServiceImpl implements UserService {
 
 
     private UserRepository userRepository;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,ModelMapper  modelMapper) {
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -32,6 +35,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public User create(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
+        return userRepository.save(user);
     }
 
 
