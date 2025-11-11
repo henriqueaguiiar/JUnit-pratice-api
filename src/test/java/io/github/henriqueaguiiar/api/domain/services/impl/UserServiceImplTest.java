@@ -3,6 +3,7 @@ package io.github.henriqueaguiiar.api.domain.services.impl;
 import io.github.henriqueaguiiar.api.domain.dto.UserDTO;
 import io.github.henriqueaguiiar.api.domain.entity.User;
 import io.github.henriqueaguiiar.api.domain.repositories.UserRepository;
+import io.github.henriqueaguiiar.api.domain.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,6 +66,18 @@ class UserServiceImplTest {
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
         assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    @DisplayName("When Find by Id then return ObjectNotFoundException")
+    void whenFindByIdThenReturnObjectNotFound() {
+        when(userRepository.findById(anyInt())).thenThrow(new ObjectNotFoundException("User not found"));
+        try{
+            userService.findById(ID);
+        }catch (Exception e){
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            assertEquals("User not found", e.getMessage());
+        }
     }
 
     @Test
